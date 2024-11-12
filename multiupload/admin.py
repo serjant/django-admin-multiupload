@@ -277,10 +277,12 @@ class MultiUploadAdmin(admin.ModelAdmin):
             }
             context.update(self.get_upload_context())
 
-            return render(request,
-                          self.multiupload_template,
-                          context,
-                          )
+            response = render(request, self.multiupload_template, context)
+            # Adding a custom CSP header with 'unsafe-eval' for the view
+            response['Content-Security-Policy'] = (
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ajax.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net blob:; "
+            )
+            return response
 
     def get_upload_context(self):
         return self.multiupload_view_context.copy()
